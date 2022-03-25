@@ -4,19 +4,29 @@ import axios from 'axios'
 const LoginForm = () => {
     const[username, setUsername] = useState('')
     const[password, setPassword] = useState('')
-    const handleSubmit = (event) => {
+    const[error, setError] = useState('')
+
+    const handleSubmit = async (event) => {
         event.preventDefault()
 
         const authObject = {
             'Project-ID': "aa459c71-67bf-4f64-8de8-89931a49fd68",
             'User-Name': username,
             'User-Secret': password
-
         }
+        try{
+            //username / password => chatengine -> give messages
+            await axios.get('https://api.chatengine.io/chats', {headers: authObject});
+            //works out -> logged in, store to local storage
+            localStorage.setItem('username', username)
+            localStorage.setItem('password', password)
+            //reload the page
+            window.location.reload();
 
-        //username / password => chatengine -> give messages
-        //works out -> logged in
-        //error -> try with new username
+        }catch(error){
+            //error -> try with new username
+            setError("Invalid username or password")
+        }
     }
 
     return(
@@ -46,6 +56,8 @@ const LoginForm = () => {
                             <span>Login to Start Chatting</span>
                         </button>
                     </div>
+
+                    <h2 className='error'>{error}</h2>
 
                 </form>
             </div>
